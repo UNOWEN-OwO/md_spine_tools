@@ -1105,5 +1105,5 @@ def toggle_armature_constrain(mdst_spine):
         for constrains in bone.constraints:
             if constrains.type == 'COPY_TRANSFORMS':
                 constrains.enabled = mdst_spine.armature_constrain
-            if constrains.name in ['COPY_LOCATION', 'COPY_ROTATION', 'IK']:
+            if constrains.type in ['COPY_LOCATION', 'COPY_ROTATION', 'IK']:
                 constrains.enabled = not mdst_spine.armature_constrain

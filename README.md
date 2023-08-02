@@ -2,8 +2,6 @@
 
 Blender Python addon to import spine2d mesh and animation data to 3d model in blender.
 
-
-
 ## Background
 
 This addon is designed mostly for Master Duel Spine animation data that uses spine 4.0, also due the engine difference, part of the animation data will be lost or unable to replicate perfectly in blender during the importing (or just did not find the correct way).
@@ -18,16 +16,22 @@ Spine json format: http://esotericsoftware.com/spine-json-format
 
 Spine user guide: http://esotericsoftware.com/spine-user-guide
 
+![winda](https://github.com/UNOWEN-OwO/md_spine_tools/assets/41463621/e5f5e80e-788d-4584-9445-4ff7eebb84da)
+
 ## Requirements
 
 - Only tested on Blender 3.5 and 3.6, should work on 3.3+.
 - Python 3.7 as the blender python version is 3.7.
 - Spine 4.0 json format, some Master Duel Spine animation may not load correctly event on Spine's official editor.
 
+![ss](https://github.com/UNOWEN-OwO/md_spine_tools/assets/41463621/53cc934f-c31a-4513-a5c5-16a20d8d89f1)
+
 ## Installation
 
 1. Place this addon folder to your blender addon folder: `\Blender\3.X\scripts\addons`
 2. Enable this addon in blender addon list: `Edit > Preferences > Add-ons > Import-Export: MD Spine Tools`
+
+![zeus](https://github.com/UNOWEN-OwO/md_spine_tools/assets/41463621/439c30d7-7b2d-4bc2-8095-004c6cce5bbe)
 
 ## Usage
 
@@ -49,6 +53,7 @@ Then select animation to be load (default last animation, as MD uses the latest)
 
 **Alternative Mesh** Due to the difference of blender and spine handle weights and rotation, some meshes may not load correctly, this option will generate meshes for each `mesh` attachment in `skin` with an alternative approach and stored in `AlternativeMesh` collection.
 
+![ezgif-1-af337bb720](https://github.com/UNOWEN-OwO/md_spine_tools/assets/41463621/9658bac1-38e1-4ec3-98f9-5d0f78b9aaab)
 
 ## Known Issues & Current Limitations
 

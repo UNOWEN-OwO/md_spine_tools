@@ -51,20 +51,6 @@ class MDST_OT_ImportSpine(Operator, ImportHelper):
     filename_ext = '*.json;.*.spine-json;*.asset'
     filter_glob: StringProperty(default='*.json;.*.spine-json;*.asset', options={'HIDDEN'})
     filepath: StringProperty(name='File Path', maxlen=1024)
-    # chk_import_animation: BoolProperty(name='Import Animation', default=True)
-    # chk_experimental: BoolProperty(name='Experimental Animation Setup', default=False)
-    # chk_simple_material: BoolProperty(name='Simple Material', default=False)
-
-    # def draw(self, context):
-    #     box = self.layout.box()
-    #     box.label(text='Settings:', icon='IMPORT')
-    #     box.prop(self, 'chk_import_animation')
-    #     if not self.chk_import_animation:
-    #         animation_settings = box.box()
-    #         split = animation_settings.split(factor=0.1)
-    #         _, col = split.column(), split.column()
-    #         col.prop(self, 'chk_experimental')
-    #     box.prop('chk_simple_material')
 
     def execute(self, context):
         self.report({'INFO'}, f'[md_spine_tools] Finished importing {self.filepath}')

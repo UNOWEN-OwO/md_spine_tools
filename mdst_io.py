@@ -792,6 +792,7 @@ def load_spine(mdst_spine):
     #     bone['_scale_x'] = 1 if bone.name == 'root' else bone_dict[bone.name].parent_bone.abs_scale_x
     #     bone['_scale_y'] = 1 if bone.name == 'root' else bone_dict[bone.name].parent_bone.abs_scale_y
 
+    # adajust viewport
     for a in bpy.context.screen.areas:
         if a.type == 'VIEW_3D':
             for s in a.spaces:
@@ -804,7 +805,6 @@ def load_spine(mdst_spine):
                     s.region_3d.view_rotation = mathutils.Euler((0.001 + math.pi / 2, 0, 0), 'XYZ').to_quaternion()
                     s.region_3d.view_perspective = 'ORTHO'
     bpy.context.view_layer.update()
-    return data
 
 
 def load_animation(mdst_spine):
@@ -822,6 +822,7 @@ def load_animation(mdst_spine):
 
     if mdst_spine.chk_create_static_action:
 
+        # create static action
         MDST_LOGGER.info('Create static action')
         if not bpy.data.actions.get('staticAction'):
             bpy.data.actions.new('staticAction')

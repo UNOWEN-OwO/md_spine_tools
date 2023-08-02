@@ -40,6 +40,7 @@ class MDSTSettings(object):
         self.save_settings_file()
 
     def load_settings_file(self, filepath):
+        # load settings file
         settings_dict = {}
         with open(filepath) as f:
             try:

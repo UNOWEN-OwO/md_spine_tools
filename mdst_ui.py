@@ -9,7 +9,10 @@ from .mdst_io import load_json, load_spine, load_animation, apply_pose, toggle_a
 
 # ['objects', 'armatures', 'meshes', 'curves', 'materials', 'actions']
 def delete_helper(objs):
-    bpy.ops.object.mode_set(mode="OBJECT")
+    try:
+        bpy.ops.object.mode_set(mode="OBJECT")
+    except:
+        pass
 
     for obj in objs:
         for data in getattr(bpy.data, obj):

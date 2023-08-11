@@ -153,8 +153,8 @@ class Path:
         for k, v in list(attachments[self.target].values())[0].items():
             setattr(self, k, v)
 
-        # FIXME is there a chance path has only one vertex group?
-        self.vertices = load_vertex(self.vertices)
+        # Path do have more than one vertices!
+        self.vertices = load_vertex(self.vertices, len(self.vertices) // 2 == self.vertexCount)
 
 
 class Slot:
@@ -208,7 +208,7 @@ class AtlasImage:
         scale = re.search(r'scale:(?:| )(\w+)', atlas_image_data)
         self.scale = float(scale.group(1).strip()) if scale else 1
 
-        self.atlas = [Atlas(a[0], self) for a in re.findall(r'(^\w+\n(.|\n)*?)(?=^\w+\n|\Z)', atlas_image_data, re.MULTILINE)]
+        self.atlas = [Atlas(a[0], self) for a in re.findall(r'(^[^ :]+\n(.|\n)*?)(?=^[^ :]+\n|\Z)', atlas_image_data, re.MULTILINE)[1:]]
 
 
 class RGBA:
@@ -600,7 +600,7 @@ def load_spine(mdst_spine):
 
                 uv_data = attachment['uvs']
                 uvs = []
-                atlas = atlas_dict[slot_name] if slot_name in atlas_dict else atlas_dict[k]
+                atlas = atlas_dict[slot_name] if slot_name in atlas_dict else atlas_dict[k] if k in atlas_dict else atlas_dict[attachment['path']] if 'path' in attachment else None
                 for idx in range(len(uv_data)//2):
                     x, y = uv_data[idx*2:idx*2+2]
                     x = x * atlas.size[0] / atlas.atlas_image.size_x
@@ -735,7 +735,7 @@ def load_spine(mdst_spine):
                 mesh.vertex_groups.new(name=slots[k].bone).add([0, 1, 2, 3], 1, 'REPLACE')
                 mesh.modifiers.new('Armature', 'ARMATURE').object = armature_obj
 
-                atlas = atlas_dict[slot_name] if slot_name in atlas_dict else atlas_dict[k]
+                atlas = atlas_dict[slot_name] if slot_name in atlas_dict else atlas_dict[k] if k in atlas_dict else atlas_dict[attachment['path']] if 'path' in attachment else None
                 uvs = [(x / atlas.atlas_image.size_x, 1 - y / atlas.atlas_image.size_y) for x, y in ([
                     (atlas.xy[0], atlas.xy[1] + atlas.size[0]),
                     (atlas.xy[0], atlas.xy[1]),

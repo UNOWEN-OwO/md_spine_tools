@@ -875,7 +875,7 @@ def load_animation(mdst_spine):
 
             # alpha keyframe
             material_node.nodes['Mix'].inputs[0].default_value = 1 - color.a
-            material_node.nodes['Mix'].inputs[0].keyframe_insert('default_value', frame=keyframe.get('time', 0) * fps)
+            material_node.nodes['Mix'].inputs[0].keyframe_insert('default_value', frame=round(keyframe.get('time', 0) * fps))
 
             if handle_left:
                 material_node.animation_data.action.fcurves[-1].keyframe_points[-1].handle_left_type = 'FREE'
@@ -894,12 +894,21 @@ def load_animation(mdst_spine):
                 material_node.animation_data.action.fcurves[-1].keyframe_points[-1].interpolation = curve_type
                 handle_left = []
 
-            frame_end = max(frame_end, keyframe.get('time', 0) * fps)
+            frame_end = max(frame_end, round(keyframe.get('time', 0) * fps))
 
+        zero_keyframe_stat = False
         for attachment in slot.get('attachment', []):
+            if not zero_keyframe_stat and round(attachment.get('time', 0) * fps) > 0:
+                zero_keyframe_stat = True
+                slot_obj.hide_render = slot_obj.hide_viewport = False
+                slot_obj.keyframe_insert('hide_viewport', frame=0)
+                slot_obj.keyframe_insert('hide_render', frame=0)
+            elif round(attachment.get('time', 0) * fps) == 0:
+                zero_keyframe_stat = True
+
             slot_obj.hide_render = slot_obj.hide_viewport = 'name' not in attachment
-            slot_obj.keyframe_insert('hide_viewport', frame=attachment.get('time', 0) * fps)
-            slot_obj.keyframe_insert('hide_render', frame=attachment.get('time', 0) * fps)
+            slot_obj.keyframe_insert('hide_viewport', frame=round(attachment.get('time', 0) * fps))
+            slot_obj.keyframe_insert('hide_render', frame=round(attachment.get('time', 0) * fps))
 
     for bone_name, bone in animation.get('bones', {}).items():
         try:
@@ -920,8 +929,8 @@ def load_animation(mdst_spine):
             #     # if bone_obj.name.startswith('IK_'):
             #     # MDST_LOGGER.info(bone_obj.name)
             #     # MDST_LOGGER.info(math.degrees(bone_obj.rotation_euler.x))
-            #     if scene.frame_current != int(translate.get('time', 0) * fps):
-            #         scene.frame_set(int(translate.get('time', 0) * fps))
+            #     if scene.frame_current != round(translate.get('time', 0) * fps):
+            #         scene.frame_set(round(translate.get('time', 0) * fps))
             #     # roll = context_bones[bone_obj.name].matrix.to_euler().x
             #     # roll = context_bones[bone_obj.name].rotation_euler.x - bone_obj['_parent_local_rotation']
             #     roll = bone_obj['_parent_local_rotation'] - context_bones[bone_obj.name].rotation_euler.x
@@ -940,7 +949,7 @@ def load_animation(mdst_spine):
 
             # but why x, 0, y become 0, x, y?
             bone_obj.location = mathutils.Vector((0, tr_x, tr_y))
-            bone_obj.keyframe_insert('location', frame=translate.get('time', 0) * fps)
+            bone_obj.keyframe_insert('location', frame=round(translate.get('time', 0) * fps))
             curve = translate.get('curve', 'LINEAR')
 
             if handle_left:
@@ -989,7 +998,7 @@ def load_animation(mdst_spine):
             # bone_obj.rotation_euler[0] = math.radians(rotate.get('value', 0))
 
             bone_obj.rotation_euler[0] = static_rotation + math.radians(rotate.get('value', 0))
-            bone_obj.keyframe_insert('rotation_euler', frame=rotate.get('time', 0) * fps)
+            bone_obj.keyframe_insert('rotation_euler', frame=round(rotate.get('time', 0) * fps))
             curve = rotate.get('curve', 'LINEAR')
 
             if handle_left:
@@ -1016,7 +1025,7 @@ def load_animation(mdst_spine):
             # bone_obj.scale = (1, scale.get('x', 1), scale.get('y', 1))
 
             bone_obj.scale = (1, static_scale_x * scale.get('x', 1), static_scale_y * scale.get('y', 1))
-            bone_obj.keyframe_insert('scale', frame=scale.get('time', 0) * fps)
+            bone_obj.keyframe_insert('scale', frame=round(scale.get('time', 0) * fps))
             curve = scale.get('curve', 'LINEAR')
 
             if handle_left:
@@ -1049,7 +1058,7 @@ def load_animation(mdst_spine):
 
     offset_dict = {}
     for draw_order in animation.get('drawOrder', []):
-        time = draw_order.get('time', 0) * fps
+        time = round(draw_order.get('time', 0) * fps)
         offsets = {slot['slot']: slot['offset'] for slot in draw_order.get('offsets', [])}
 
         for slot_name in offsets.keys():

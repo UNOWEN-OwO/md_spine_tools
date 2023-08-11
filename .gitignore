@@ -312,4 +312,6 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij,python,blender
 
 .idea/
-test.py
+test*.py
+*.zip
+TEST/*

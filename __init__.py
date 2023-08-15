@@ -9,7 +9,7 @@ from .settings import MDSTSettings
 bl_info = {
     'name': 'MD Spine Tools',
     'author': 'UNOWEN-OwO',
-    'version': (0, 0, 2),
+    'version': (0, 0, 3),
     'blender': (3, 6, 0),
     'location': '3D View > UI > MD Spine Tools',
     'description': 'Import Spine mesh and animation form Master Duel',

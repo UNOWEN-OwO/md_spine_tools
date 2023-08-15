@@ -219,6 +219,12 @@ class RGBA:
         self.a = int(rgba[6:8], 16) / 255
 
 
+def get_material_node(nodes, node_type):
+    for node in nodes:
+        if node.type == node_type:
+            return node
+
+
 def create_material(atlas, mesh_name, filepath):
     material = bpy.data.materials.new(mesh_name or atlas.image)
     material.use_nodes = True
@@ -228,7 +234,7 @@ def create_material(atlas, mesh_name, filepath):
     # material.use_backface_culling = True
     # material.use_screen_refraction = True
     # material.use_nodes = True
-    bsdf_node = material.node_tree.nodes.get('Principled BSDF')
+    bsdf_node = get_material_node(material.node_tree.nodes, 'BSDF_PRINCIPLED')
     image_node = material.node_tree.nodes.new('ShaderNodeTexImage')
     image_node.location = (-600, 0)
     if filepath:
@@ -679,7 +685,7 @@ def load_spine(mdst_spine):
                     mask_material.blend_method = 'BLEND'
                     mask_material.shadow_method = 'CLIP'
 
-                    bsdf_node = mask_material.node_tree.nodes.get('Principled BSDF')
+                    bsdf_node = get_material_node(material.node_tree.nodes, 'BSDF_PRINCIPLED')
                     value = mask_material.node_tree.nodes.new('ShaderNodeValue')
 
                     mask_material.node_tree.links.new(value.outputs['Value'], bsdf_node.inputs['Alpha'])
@@ -867,15 +873,16 @@ def load_animation(mdst_spine):
             material_node = slot_obj.material_slots[0].material.node_tree
 
             # skip mask material (for now)
-            if 'Mix' not in material_node.nodes:
+            mix_node = get_material_node(material_node.nodes, 'MIX')
+            if not mix_node:
                 continue
 
             color = RGBA(keyframe['color'])
             curve = keyframe.get('curve', 'LINEAR')
 
             # alpha keyframe
-            material_node.nodes['Mix'].inputs[0].default_value = 1 - color.a
-            material_node.nodes['Mix'].inputs[0].keyframe_insert('default_value', frame=round(keyframe.get('time', 0) * fps))
+            mix_node.inputs[0].default_value = 1 - color.a
+            mix_node.inputs[0].keyframe_insert('default_value', frame=round(keyframe.get('time', 0) * fps))
 
             if handle_left:
                 material_node.animation_data.action.fcurves[-1].keyframe_points[-1].handle_left_type = 'FREE'
@@ -1109,10 +1116,19 @@ def apply_pose():
 
 
 def toggle_armature_constrain(mdst_spine):
+    # otherwise switching to object mode will cause RuntimeError
+    bpy.data.objects['rootControl'].hide_set(False)
     bpy.ops.object.mode_set(mode='OBJECT')
+
     for bone in bpy.data.objects['root'].pose.bones:
         for constrains in bone.constraints:
             if constrains.type == 'COPY_TRANSFORMS':
                 constrains.enabled = mdst_spine.armature_constrain
             if constrains.type in ['COPY_LOCATION', 'COPY_ROTATION', 'IK']:
                 constrains.enabled = not mdst_spine.armature_constrain
+
+
+def toggle_non_mesh_obj_hide(mdst_spine):
+    for obj in bpy.data.objects:
+        if obj.type != 'MESH':
+            obj.hide_viewport = True
